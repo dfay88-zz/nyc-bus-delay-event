@@ -66,7 +66,7 @@ def main(sc):
 	spark = HiveContext(sc)
 	
 	# Source data file
-	path = 'data/BDM_BusData_subset.csv'
+	path = '/user/is1480/project/BDM_BusData.csv'
 	
 	# Parse datafile to RDD.
 	data = sc.textFile(path).mapPartitionsWithIndex(parseCSV)
@@ -113,7 +113,7 @@ def main(sc):
     rdd_times.sort(functions.col('bus'), functions.col('date'), functions.col('interval')))
     
     # Load schedule data to RDD then DF.
-	schedules = sc.textFile('game_schedules/combined_schedules.csv').map(lambda line: line.split(","))
+	schedules = sc.textFile('user/is1480/project/combined_schedules.csv').map(lambda line: line.split(","))
 	sched_df = schedules.toDF(['index', 'Home team', 'starttime', 'endtime', 
 							   'startwindow_start', 'startwindow_end', 'endwindow_start',
 							   'endwindow_end'])
