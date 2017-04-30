@@ -78,18 +78,18 @@ def main(sc):
                 	.values()
                 	.map(lambda x: (x[0], (x[1:6]))))
                 	
-    ## For each unique bus line, calculate route end time.
+## For each unique bus line, calculate route end time.
 	max_by_group = (data
                 	.map(lambda x: (x[0], x[0:2]))
                 	.reduceByKey(lambda x1, x2: max(x1, x2, key=lambda x: x[1]))
                 	.values())
                 	
-    # Join start and stop times.
+        # Join start and stop times.
 	rdd = min_by_group.join(max_by_group)
 	rdd = rdd.flatMap(lambda x: [[x[0], x[1][0][0], x[1][1], x[1][0][1],
                               	 x[1][0][2], x[1][0][4]]])
     
-    # Calculate duration of bus.
+        # Calculate duration of bus.
 	time_diff = rdd.toDF(['id', 'start', 'stop', 'bus', 'tripid', 'interval'])
 	time_diff = time_diff.select('id', time_diff['start'].cast('timestamp'),
                              	 time_diff['stop'].cast('timestamp'), 
@@ -110,22 +110,23 @@ def main(sc):
 	# Groupby calculate bus duration and bus count.
 	rdd_times = (master.groupby("bus", functions.date_format('start', 'yyyy-MM-dd').alias('date'), "direction", "interval")
              	 .agg({"duration": "avg", "id": "count"}))         	 
-    rdd_times.sort(functions.col('bus'), functions.col('date'), functions.col('interval')))
+        rdd_times.sort(functions.col('bus'), functions.col('date'), functions.col('interval'))
     
-    # Load schedule data to RDD then DF.
-	schedules = sc.textFile('user/is1480/project/combined_schedules.csv').map(lambda line: line.split(","))
-	sched_df = schedules.toDF(['index', 'Home team', 'starttime', 'endtime', 
-							   'startwindow_start', 'startwindow_end', 'endwindow_start',
-							   'endwindow_end'])
+        # Load schedule data to RDD then DF.
+	schedules = sc.textFile('/user/is1480/project/combined_schedules.csv').map(lambda line: line.split(","))
+	sched_df = schedules.toDF(['index', 'Home team', 'starttime', 'endtime', 'startwindow_start', 'startwindow_end', 'endwindow_start', 'endwindow_end'])
 	
 	# Convert columns to timestamp.
 	for col in sched_df.columns[2:]:
-    	sched_df = sched_df.withColumn(col, sched_df[col].cast('timestamp'))
-    sched_df = sched_df.withColumn('date', functions.date_format('starttime', 'yyyy-MM-dd'))
+            sched_df = sched_df.withColumn(col, sched_df[col].cast('timestamp'))
+        sched_df = sched_df.withColumn('date', functions.date_format('starttime', 'yyyy-MM-dd'))
 	
 	# Join schedule data to bus data.
 	joined_df = rdd_times.join(sched_df, 'date', 'left')
-	joined_df = joined_df.drop('index', 'Home team', 'starttime', 'endtime')
+	joined_df = joined_df.drop('index')
+    joined_df = joined_df.drop('Home team')
+    joined_df = joined_df.drop('starttime')
+    joined_df = joined_df.drop('endtime')
 	joined_df = joined_df.withColumn('time', functions.split(joined_df.interval, '-')[0])
 	joined_df = joined_df.withColumn('start',
 									 functions.concat(functions.col('date'),
@@ -140,8 +141,11 @@ def main(sc):
 		labelFunc(joined_df.start, joined_df.startwindow_start, joined_df.startwindow_end, 
 				  joined_df.endwindow_start, joined_df.endwindow_end))
 				  
-	labeled_df = labeled_df.drop('startwindow_start', 'startwindow_end',
-								 'endwindow_start', 'endwindow_end', 'start')
+	labeled_df = labeled_df.drop('startwindow_start')
+    labeled_df = labeled_df.drop('startwindow_end')
+    labeled_df = labeled_df.drop('endwindow_start')
+    labeled_df = labeled_df.drop('endwindow_end')
+    labeled_df = labeled_df.drop('start')
 	labeled_df = labeled_df.orderBy('date', 'bus', 'interval')
 	
 	
@@ -172,18 +176,18 @@ def main(sc):
 	df_no_baseball = df_season.where(df_season.is_game_bus == 0)
 	
 	# Selecting intervals with baseball games.
-	df_no_baseball = df_no_baseball.where(functions.col("interval").isin({'11:30-11:45', '11:45-12:00', '12:00-12:15', '12:15-12:30', '12:30-12:45', '12:45-13:00', '13:00-13:15', '13:15-13:30', '14:30-14:45', '14:45-15:00', '15:00-15:15', '15:15-15:30', '15:30-15:45', '15:45-16:00', '16:00-16:15', '16:15-16:30', '16:30-16:45', '16:45-17:00', '17:00-17:15', '17:15-17:30', '17:30-17:45', '17:45-18:00', '18:00-18:15', '18:15-18:30', '18:30-18:45', '18:45-19:00', '19:00-19:15', '19:15-19:30', '19:30-19:45', '20:00-20:15', '20:15-20:30', '21:30-21:45', '21:45-22:00', '22:00-22:15', '22:15-22:30', '22:30-22:45', '22:45-23:00', '23:00-23:15', '23:15-23:30'}))
+	df_no_baseball = df_no_baseball.where(functions.col("interval").isin(['11:30-11:45', '11:45-12:00', '12:00-12:15', '12:15-12:30', '12:30-12:45', '12:45-13:00', '13:00-13:15', '13:15-13:30', '14:30-14:45', '14:45-15:00', '15:00-15:15', '15:15-15:30', '15:30-15:45', '15:45-16:00', '16:00-16:15', '16:15-16:30', '16:30-16:45', '16:45-17:00', '17:00-17:15', '17:15-17:30', '17:30-17:45', '17:45-18:00', '18:00-18:15', '18:15-18:30', '18:30-18:45', '18:45-19:00', '19:00-19:15', '19:15-19:30', '19:30-19:45', '20:00-20:15', '20:15-20:30', '21:30-21:45', '21:45-22:00', '22:00-22:15', '22:15-22:30', '22:30-22:45', '22:45-23:00', '23:00-23:15', '23:15-23:30']))
 	
 	# Convert to pandas.
 	df_no_baseball_pd = df_no_baseball.toPandas()
 	df_baseball_pd = df_baseball.toPandas()
 	
 	# Write to csv.
-	df_no_baseball_pd.to_csv('/user/is1480/project/mta_no_baseball.csv')
-	df_baseball_pd.to_csv('/user/is1480/project/mta_baseball.csv')
+    df_no_baseball_pd.to_csv("BDM_NoGame_Output.csv")
+    df_baseball_pd.to_csv("BDM_Game_Output.csv")
 	
 	# KS test
-	return stats.ks_2samp(df_no_baseball_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
+	print stats.ks_2samp(df_no_baseball_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
 	
 if __name__ == "__main__":
 	sc = SparkContext()
