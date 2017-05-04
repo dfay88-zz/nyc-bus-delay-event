@@ -188,7 +188,6 @@ def main(sc):
     # Convert to pandas.
     df_no_baseball_pd = df_no_baseball.toPandas()
     df_baseball_pd = df_baseball.toPandas()
-    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['column_name'].isin(some_values)]
 
     # Find Weekends
     df_no_baseball_pd['date'] = pd.to_datetime(df_no_baseball_pd['date'])
