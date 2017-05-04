@@ -191,14 +191,15 @@ def main(sc):
 
     # Find Weekends
     df_no_baseball_pd['date'] = pd.to_datetime(df_no_baseball_pd['date'])
-    df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.weekday_name
-    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin(['Saturday', 'Sunday'])]
+    df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.day
+    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([5,6])]
 
     # Write to csv.
+    df_no_baseball_weekends_pd.to_csv("BDM_NoGame_Weekend_Output.csv")
     #df_no_baseball_pd.to_csv("BDM_NoGame_Output.csv")
     #df_baseball_pd.to_csv("BDM_Game_Output.csv")
-    # df_no_baseball_pd.to_csv('/user/is1480/project/mta_no_baseball.csv')
-    # df_baseball_pd.to_csv('/user/is1480/project/mta_baseball.csv')
+    #df_no_baseball_pd.to_csv('/user/is1480/project/mta_no_baseball.csv')
+    #df_baseball_pd.to_csv('/user/is1480/project/mta_baseball.csv')
 
 
     # KS test all
