@@ -78,18 +78,18 @@ def main(sc):
                 	.values()
                 	.map(lambda x: (x[0], (x[1:6]))))
 
-## For each unique bus line, calculate route end time.
+    ## For each unique bus line, calculate route end time.
 	max_by_group = (data
                 	.map(lambda x: (x[0], x[0:2]))
                 	.reduceByKey(lambda x1, x2: max(x1, x2, key=lambda x: x[1]))
                 	.values())
 
-        # Join start and stop times.
+    # Join start and stop times.
 	rdd = min_by_group.join(max_by_group)
 	rdd = rdd.flatMap(lambda x: [[x[0], x[1][0][0], x[1][1], x[1][0][1],
                               	 x[1][0][2], x[1][0][4]]])
 
-        # Calculate duration of bus.
+    # Calculate duration of bus.
 	time_diff = rdd.toDF(['id', 'start', 'stop', 'bus', 'tripid', 'interval'])
 	time_diff = time_diff.select('id', time_diff['start'].cast('timestamp'),
                              	 time_diff['stop'].cast('timestamp'),
@@ -112,14 +112,14 @@ def main(sc):
              	 .agg({"duration": "avg", "id": "count"}))
         rdd_times.sort(functions.col('bus'), functions.col('date'), functions.col('interval'))
 
-        # Load schedule data to RDD then DF.
+    # Load schedule data to RDD then DF.
 	schedules = sc.textFile('/user/is1480/project/combined_schedules.csv').map(lambda line: line.split(","))
 	sched_df = schedules.toDF(['index', 'Home team', 'starttime', 'endtime', 'startwindow_start', 'startwindow_end', 'endwindow_start', 'endwindow_end'])
 
 	# Convert columns to timestamp.
 	for col in sched_df.columns[2:]:
             sched_df = sched_df.withColumn(col, sched_df[col].cast('timestamp'))
-        sched_df = sched_df.withColumn('date', functions.date_format('starttime', 'yyyy-MM-dd'))
+            sched_df = sched_df.withColumn('date', functions.date_format('starttime', 'yyyy-MM-dd'))
 
 	# Join schedule data to bus data.
 	joined_df = rdd_times.join(sched_df, 'date', 'left')
@@ -128,8 +128,7 @@ def main(sc):
     joined_df = joined_df.drop('starttime')
     joined_df = joined_df.drop('endtime')
 	joined_df = joined_df.withColumn('time', functions.split(joined_df.interval, '-')[0])
-	joined_df = joined_df.withColumn('start',
-									 functions.concat(functions.col('date'),
+	joined_df = joined_df.withColumn('start', functions.concat(functions.col('date'),
 									 				  functions.lit(' '),
 									 				  functions.col('time')
 									 				  ).cast('timestamp'))
