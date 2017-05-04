@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Tue May 02 16:44:59 EDT 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-015b-cae8-b191-000008bd9f30 
-on database directory /Users/Danny1/Documents/NYU/BigData/nyc-bus-delay-event/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@2b1e916b 
+Wed May 03 22:02:30 EDT 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-015b-d131-bfe0-00000ca4b090 
+on database directory /Users/Danny1/Documents/NYU/BigData/nyc-bus-delay-event/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@2ba8f3fe 
 Loaded from file:/usr/local/Cellar/apache-spark/2.1.0/libexec/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_121-b13

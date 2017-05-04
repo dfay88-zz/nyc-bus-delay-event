@@ -188,19 +188,31 @@ def main(sc):
     # Convert to pandas.
     df_no_baseball_pd = df_no_baseball.toPandas()
     df_baseball_pd = df_baseball.toPandas()
+    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['column_name'].isin(some_values)]
+
+    # Find Weekends
+    df_no_baseball_pd['date'] = pd.to_datetime(df_no_baseball_pd['date'])
+    df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.weekday_name
+    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin(['Saturday', 'Sunday'])]
 
     # Write to csv.
-    df_no_baseball_pd.to_csv("BDM_NoGame_Output.csv")
-    df_baseball_pd.to_csv("BDM_Game_Output.csv")
+    #df_no_baseball_pd.to_csv("BDM_NoGame_Output.csv")
+    #df_baseball_pd.to_csv("BDM_Game_Output.csv")
     # df_no_baseball_pd.to_csv('/user/is1480/project/mta_no_baseball.csv')
     # df_baseball_pd.to_csv('/user/is1480/project/mta_baseball.csv')
 
-    # KS test
+
+    # KS test all
     print 'KS Test Results: ', stats.ks_2samp(df_no_baseball_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
     print 'Mean Travel Time During Baseball: ', df_baseball_pd['avg(duration)'].mean()
     print 'Std Travel Time During Baseball: ', df_baseball_pd['avg(duration)'].std()
     print 'Mean Travel Time Not During Baseball: ', df_no_baseball_pd['avg(duration)'].mean()
     print 'Std Travel Time Not During Baseball: ', df_no_baseball_pd['avg(duration)'].std()
+
+    # KS test weekends
+    print 'KS Test Weekends Results: ', stats.ks_2samp(df_no_baseball_weekends_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
+    print 'Mean Travel Time Not During Baseball: ', df_no_baseball_weekends_pd['avg(duration)'].mean()
+    print 'Std Travel Time Not During Baseball: ', df_no_baseball_weekends_pd['avg(duration)'].std()
 
 if __name__ == "__main__":
     sc = SparkContext()
