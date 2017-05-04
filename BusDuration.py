@@ -191,8 +191,8 @@ def main(sc):
 
     # Find Weekends
     df_no_baseball_pd['date'] = pd.to_datetime(df_no_baseball_pd['date'])
-    df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.day
-    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([5,6])]
+    df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.dayofweek
+    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([6,7])]
 
     # Write to csv.
     df_no_baseball_weekends_pd.to_csv("BDM_NoGame_Weekend_Output.csv")
