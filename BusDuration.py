@@ -191,26 +191,35 @@ def main(sc):
 
     # Find Weekends
     df_no_baseball_pd['date'] = pd.to_datetime(df_no_baseball_pd['date'])
+    df_baseball_pd['date'] = pd.to_datetime(df_baseball_pd['date'])
     df_no_baseball_pd['day'] = df_no_baseball_pd['date'].dt.dayofweek
-    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([6,7])]
+    df_baseball_pd['day'] = df_baseball_pd['date'].dt.dayofweek
+    df_no_baseball_weekends_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([5,6])]
+    df_baseball_weekends_pd = df_baseball_pd.loc[df_baseball_pd['day'].isin([5,6])]
+    df_no_baseball_weekday_pd = df_no_baseball_pd.loc[df_no_baseball_pd['day'].isin([0,1,2,3,4])]
+    df_baseball_weekday_pd = df_baseball_pd.loc[df_baseball_pd['day'].isin([0,1,2,3,4])]
 
     # Write to csv.
     df_no_baseball_weekends_pd.to_csv("BDM_NoGame_Weekend_Output.csv")
-    #df_no_baseball_pd.to_csv("BDM_NoGame_Output.csv")
-    #df_baseball_pd.to_csv("BDM_Game_Output.csv")
-    #df_no_baseball_pd.to_csv('/user/is1480/project/mta_no_baseball.csv')
-    #df_baseball_pd.to_csv('/user/is1480/project/mta_baseball.csv')
+    df_baseball_weekends_pd.to_csv("BDM_Game_Weekend_Output.csv")
+    df_no_baseball_weekday_pd.to_csv("BDM_NoGame_Weekday_Output.csv")
+    df_baseball_weekday_pd.to_csv("BDM_Game_Weekday_Output.csv")
 
 
-    # KS test all
-    print 'KS Test Results: ', stats.ks_2samp(df_no_baseball_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
-    print 'Mean Travel Time During Baseball: ', df_baseball_pd['avg(duration)'].mean()
-    print 'Std Travel Time During Baseball: ', df_baseball_pd['avg(duration)'].std()
-    print 'Mean Travel Time Not During Baseball: ', df_no_baseball_pd['avg(duration)'].mean()
-    print 'Std Travel Time Not During Baseball: ', df_no_baseball_pd['avg(duration)'].std()
+
+    # KS test weekdays
+    print 'KS TEST WEEKDAY'
+    print 'KS Test Weekday Results: ', stats.ks_2samp(df_no_baseball_weekday_pd['avg(duration)'], df_baseball_weekday_pd['avg(duration)'])
+    print 'Mean Travel Time During Baseball: ', df_baseball_weekday_pd['avg(duration)'].mean()
+    print 'Std Travel Time During Baseball: ', df_baseball_weekday_pd['avg(duration)'].std()
+    print 'Mean Travel Time Not During Baseball: ', df_no_baseball_weekday_pd['avg(duration)'].mean()
+    print 'Std Travel Time Not During Baseball: ', df_no_baseball_weekday_pd['avg(duration)'].std()
 
     # KS test weekends
-    print 'KS Test Weekends Results: ', stats.ks_2samp(df_no_baseball_weekends_pd['avg(duration)'], df_baseball_pd['avg(duration)'])
+    print 'KS TEST WEEKEND'
+    print 'KS Test Weekend Results: ', stats.ks_2samp(df_no_baseball_weekends_pd['avg(duration)'], df_baseball_weekends_pd['avg(duration)'])
+    print 'Mean Travel Time During Baseball: ', df_baseball_weekends_pd['avg(duration)'].mean()
+    print 'Std Travel Time During Baseball: ', df_baseball_weekends_pd['avg(duration)'].std()
     print 'Mean Travel Time Not During Baseball: ', df_no_baseball_weekends_pd['avg(duration)'].mean()
     print 'Std Travel Time Not During Baseball: ', df_no_baseball_weekends_pd['avg(duration)'].std()
 
